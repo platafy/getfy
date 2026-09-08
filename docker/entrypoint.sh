@@ -169,7 +169,7 @@ if [ "${GETFY_RUN_SETUP:-true}" = "true" ]; then
   fi
   php artisan package:discover --ansi
   php artisan optimize:clear || true
-  php artisan migrate --force
+  php artisan migrate --force || true
   if ! php -r '
 require "vendor/autoload.php";
 $c = (string) @file_get_contents(".env");
