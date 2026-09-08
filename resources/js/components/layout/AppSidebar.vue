@@ -122,7 +122,7 @@ const navItems = computed(() => {
     }
 
     const groupSistema = [];
-    if (isAdmin.value) groupSistema.push({ name: 'SaaS', href: '/admin/saas', icon: Crown });
+    if (isAdmin.value) groupSistema.push({ name: 'SaaS', href: '/admin', icon: Crown });
     if (!isAdmin.value && (role === 'infoprodutor' || role === 'team')) groupSistema.push({ name: 'Meu Plano', href: '/meu-plano', icon: Crown });
     if (canView('configuracoes.view')) groupSistema.push({ name: 'Configurações', href: '/configuracoes', icon: Settings });
     if (isProducer) groupSistema.push({ name: 'Plugins', href: '/gerenciar-plugins', icon: Plug });

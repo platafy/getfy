@@ -896,6 +896,11 @@ Route::middleware(['web', 'member.area.resolve.by.host'])->group(function () {
 // ============================================================
 
 // Admin: gerenciar SaaS (apenas admin)
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::match(['get', 'head'], '/admin', [\App\Http\Controllers\SaasAdminController::class, 'index'])->name('admin.index');
+    Route::match(['get', 'head'], 'admin', [\App\Http\Controllers\SaasAdminController::class, 'index']);
+});
+
 Route::middleware(['auth', 'role:admin'])->prefix('admin/saas')->name('saas.admin.')->group(function () {
     Route::match(['get', 'head'], '', [\App\Http\Controllers\SaasAdminController::class, 'index'])->name('index');
     Route::match(['get', 'head'], '/', [\App\Http\Controllers\SaasAdminController::class, 'index']);
