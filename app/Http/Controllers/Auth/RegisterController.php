@@ -40,6 +40,12 @@ class RegisterController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
+        try {
+            app(\App\Services\SaasService::class)->assignFreePlan($user);
+        } catch (\Throwable) {
+            // Ignora erro se tabelas SaaS ainda não migradas
+        }
+
         if ($user->canAccessPanel()) {
             return redirect()->intended('/dashboard');
         }

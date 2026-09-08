@@ -38,6 +38,7 @@ class User extends Authenticatable
         'pix_key',
         'pix_key_type',
         'pix_owner_document',
+        'saas_free_plan_assigned',
     ];
 
     public function isAdmin(): bool

@@ -890,3 +890,30 @@ Route::middleware(['web', 'member.area.resolve.by.host'])->group(function () {
             ->name('member-area-app.refund.store.host');
     });
 });
+
+// ============================================================
+// Módulo SaaS: gerenciamento de planos e assinaturas da plataforma
+// ============================================================
+
+// Admin: gerenciar SaaS (apenas admin)
+Route::middleware(['auth', 'role:admin'])->prefix('admin/saas')->name('saas.admin.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\SaasAdminController::class, 'index'])->name('index');
+    Route::post('/toggle', [\App\Http\Controllers\SaasAdminController::class, 'toggleSaas'])->name('toggle');
+
+    // Planos CRUD
+    Route::post('/plans', [\App\Http\Controllers\SaasAdminController::class, 'storePlan'])->name('plans.store');
+    Route::put('/plans/{plan}', [\App\Http\Controllers\SaasAdminController::class, 'updatePlan'])->name('plans.update');
+    Route::delete('/plans/{plan}', [\App\Http\Controllers\SaasAdminController::class, 'destroyPlan'])->name('plans.destroy');
+
+    // Assinaturas
+    Route::post('/subscriptions/{subscription}/cancel', [\App\Http\Controllers\SaasAdminController::class, 'cancelSubscription'])->name('subscriptions.cancel');
+    Route::post('/assign-plan', [\App\Http\Controllers\SaasAdminController::class, 'assignPlan'])->name('assign-plan');
+
+    // API helper
+    Route::get('/infoprodutores', [\App\Http\Controllers\SaasAdminController::class, 'getInfoprodutores'])->name('infoprodutores');
+});
+
+// Infoprodutor: ver plano atual e opções de upgrade
+Route::middleware(['auth', 'role:admin|infoprodutor|team'])->group(function () {
+    Route::get('/meu-plano', [\App\Http\Controllers\SaasPlanController::class, 'index'])->name('saas.my-plan');
+});

@@ -79,6 +79,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'storefront.tenant' => \App\Http\Middleware\ResolveStorefrontTenant::class,
             'plugin.api.signature' => \App\Http\Middleware\VerifyPluginApiSignature::class,
             'plugin.commerce.scope' => \App\Http\Middleware\EnforcePluginCommerceScope::class,
+            'saas.access' => \App\Http\Middleware\CheckSaasAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
