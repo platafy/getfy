@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useForm, Link, usePage } from '@inertiajs/vue3';
 import { Eye, EyeOff, User, Lock, ArrowRight, Key, UserPlus } from 'lucide-vue-next';
 
@@ -26,11 +26,65 @@ function submit() {
         onFinish: () => form.reset('password'),
     });
 }
+
+// --------------------------------------------------------------------------
+// Animação de notificações flutuantes de vendas (Idêntica ao Checkout Platafy)
+// --------------------------------------------------------------------------
+const notifications = ref([]);
+let nextId = 0;
+let timerId = null;
+
+const buyerNames = ['Gabriel S.', 'Amanda M.', 'Lucas R.', 'Beatriz C.', 'João P.', 'Fernanda L.', 'Matheus B.', 'Camila R.', 'Rodrigo A.'];
+const transactionTypes = [
+    { type: 'Venda Aprovada', min: 97, max: 497 },
+    { type: 'PIX Gerado', min: 47, max: 297 },
+    { type: 'Venda Cartão', min: 147, max: 597 },
+];
+
+function addNotification() {
+    const randomName = buyerNames[Math.floor(Math.random() * buyerNames.length)];
+    const randomTx = transactionTypes[Math.floor(Math.random() * transactionTypes.length)];
+    const rawVal = Math.floor(Math.random() * (randomTx.max - randomTx.min) + randomTx.min) + 0.90;
+    const formattedVal = rawVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    const id = ++nextId;
+    notifications.value.push({
+        id,
+        type: randomTx.type,
+        value: formattedVal,
+        name: randomName,
+    });
+
+    if (notifications.value.length > 3) {
+        notifications.value.shift();
+    }
+
+    setTimeout(() => {
+        notifications.value = notifications.value.filter(n => n.id !== id);
+    }, 4000);
+}
+
+function startNotificationLoop() {
+    addNotification();
+    const nextTime = Math.random() * 1800 + 1600; // a cada 1.6s a 3.4s
+    timerId = setTimeout(startNotificationLoop, nextTime);
+}
+
+onMounted(() => {
+    addNotification();
+    setTimeout(() => {
+        startNotificationLoop();
+    }, 1200);
+});
+
+onUnmounted(() => {
+    if (timerId) clearTimeout(timerId);
+});
 </script>
 
 <template>
     <div class="min-h-screen w-full grid lg:grid-cols-2 bg-[#07090d] text-white font-sans overflow-x-hidden selection:bg-amber-500 selection:text-black">
-        <!-- Coluna da Esquerda (Hero + Notificações de Vendas) -->
+        <!-- Coluna da Esquerda (Hero + Animação Flutuante de Vendas) -->
         <div class="hidden lg:flex relative flex-col justify-end p-12 xl:p-16 overflow-hidden bg-[#07090d]">
             <!-- Imagem de fundo do Checkout Platafy -->
             <img
@@ -42,37 +96,33 @@ function submit() {
             <!-- Gradiente de sombra sobre a imagem -->
             <div class="absolute inset-0 bg-gradient-to-t from-[#07090d] via-black/35 to-black/20 pointer-events-none" />
 
-            <!-- Notificações flutuantes no topo esquerdo -->
-            <div class="absolute top-10 left-10 z-20 flex flex-col gap-3.5 pointer-events-none">
-                <!-- Card 1: Venda Aprovada -->
-                <div class="flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/15 bg-[#0f1419]/75 backdrop-blur-xl shadow-2xl shadow-black/60 w-72 transform hover:scale-[1.02] transition-transform duration-300">
-                    <div class="w-10 h-10 rounded-full border border-amber-500/40 bg-black/60 flex items-center justify-center overflow-hidden p-1.5 shrink-0">
-                        <img :src="iconUrl" :alt="appName" class="w-full h-full object-contain" />
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-semibold text-amber-400 uppercase tracking-wider">Venda Aprovada</span>
-                            <span class="text-[10px] text-zinc-400">Agora</span>
+            <!-- Notificações flutuantes animadas no topo esquerdo -->
+            <div class="absolute top-12 left-10 z-20 flex flex-col gap-3.5 pointer-events-none w-80">
+                <TransitionGroup name="notif">
+                    <div
+                        v-for="notif in notifications"
+                        :key="notif.id"
+                        class="notification-card glass-effect rounded-2xl p-4 flex items-center gap-3.5 w-76 shadow-2xl transition-all"
+                    >
+                        <div class="w-10 h-10 rounded-full border border-amber-500/40 bg-black/60 flex items-center justify-center overflow-hidden p-1.5 shrink-0 shadow-inner">
+                            <img :src="iconUrl" :alt="appName" class="w-full h-full object-contain" />
                         </div>
-                        <div class="text-sm font-bold text-white mt-0.5">R$ 231,90</div>
-                        <div class="text-[11px] text-zinc-300 truncate">Lucas R. acabou de comprar</div>
-                    </div>
-                </div>
-
-                <!-- Card 2: PIX Gerado -->
-                <div class="flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/15 bg-[#0f1419]/75 backdrop-blur-xl shadow-2xl shadow-black/60 w-72 transform hover:scale-[1.02] transition-transform duration-300">
-                    <div class="w-10 h-10 rounded-full border border-amber-500/40 bg-black/60 flex items-center justify-center overflow-hidden p-1.5 shrink-0">
-                        <img :src="iconUrl" :alt="appName" class="w-full h-full object-contain" />
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-semibold text-amber-400 uppercase tracking-wider">PIX Gerado</span>
-                            <span class="text-[10px] text-zinc-400">Agora</span>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start mb-0.5">
+                                <p class="text-[11px] font-bold text-amber-400 tracking-wider truncate uppercase">
+                                    {{ notif.type }}
+                                </p>
+                                <span class="text-[10px] text-zinc-400 shrink-0 ml-2">Agora</span>
+                            </div>
+                            <p class="text-sm font-extrabold text-white leading-tight">
+                                {{ notif.value }}
+                            </p>
+                            <p class="text-[11px] text-zinc-300 truncate mt-0.5">
+                                {{ notif.name }} acabou de comprar
+                            </p>
                         </div>
-                        <div class="text-sm font-bold text-white mt-0.5">R$ 102,90</div>
-                        <div class="text-[11px] text-zinc-300 truncate">Gabriel S. acabou de comprar</div>
                     </div>
-                </div>
+                </TransitionGroup>
             </div>
 
             <!-- Textos no rodapé da coluna esquerda -->
@@ -260,6 +310,41 @@ function submit() {
 </template>
 
 <style scoped>
+@keyframes float-up {
+    0% {
+        opacity: 0;
+        transform: translateY(35px) scale(0.92);
+    }
+    12% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    88% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-35px) scale(0.92);
+    }
+}
+
+.notification-card {
+    animation: float-up 4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.glass-effect {
+    background: rgba(15, 20, 25, 0.82);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: 4px solid #f59e0b;
+    box-shadow: 
+        0 14px 40px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 0 20px rgba(245, 158, 11, 0.15);
+}
+
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-4px); }
