@@ -63,8 +63,8 @@ file_put_contents($envFile, $env);
 ';
 fi
 
-# Se houver cache de config, pode "prender" env antigo. Limpa de forma segura (sem falhar o boot).
-rm -f bootstrap/cache/config.php 2>/dev/null || true
+# Se houver cache de config ou rotas, pode "prender" versão antiga. Limpa de forma segura (sem falhar o boot).
+rm -f bootstrap/cache/*.php 2>/dev/null || true
 
 php -r '
 $envFile = ".env";
@@ -168,6 +168,7 @@ if [ "${GETFY_RUN_SETUP:-true}" = "true" ]; then
     composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
   fi
   php artisan package:discover --ansi
+  php artisan optimize:clear || true
   php artisan migrate --force
   if ! php -r '
 require "vendor/autoload.php";

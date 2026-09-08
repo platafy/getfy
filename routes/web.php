@@ -897,7 +897,8 @@ Route::middleware(['web', 'member.area.resolve.by.host'])->group(function () {
 
 // Admin: gerenciar SaaS (apenas admin)
 Route::middleware(['auth', 'role:admin'])->prefix('admin/saas')->name('saas.admin.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\SaasAdminController::class, 'index'])->name('index');
+    Route::match(['get', 'head'], '', [\App\Http\Controllers\SaasAdminController::class, 'index'])->name('index');
+    Route::match(['get', 'head'], '/', [\App\Http\Controllers\SaasAdminController::class, 'index']);
     Route::post('/toggle', [\App\Http\Controllers\SaasAdminController::class, 'toggleSaas'])->name('toggle');
 
     // Planos CRUD
@@ -915,5 +916,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/saas')->name('saas.admi
 
 // Infoprodutor: ver plano atual e opções de upgrade
 Route::middleware(['auth', 'role:admin|infoprodutor|team'])->group(function () {
-    Route::get('/meu-plano', [\App\Http\Controllers\SaasPlanController::class, 'index'])->name('saas.my-plan');
+    Route::match(['get', 'head'], '/meu-plano', [\App\Http\Controllers\SaasPlanController::class, 'index'])->name('saas.my-plan');
 });
+
