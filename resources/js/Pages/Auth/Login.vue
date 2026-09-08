@@ -8,9 +8,33 @@ const page = usePage();
 const flashError = computed(() => page.props.flash?.error ?? null);
 
 const branding = computed(() => page.props.public_branding ?? {});
-const appName = computed(() => branding.value.app_name || 'Platafy');
-const logoUrl = computed(() => branding.value.app_logo || branding.value.app_logo_dark || '/images/auth/platafy_logo.png');
-const iconUrl = computed(() => branding.value.app_logo_icon || '/images/auth/platafy_icon.png');
+const appName = computed(() => {
+    const name = branding.value.app_name;
+    if (!name || name.trim().toLowerCase() === 'getfy' || name.trim().toLowerCase() === 'platafy') return 'PLATAFY';
+    return name;
+});
+
+const isGetfyCdn = (url) => typeof url === 'string' && (url.includes('getfy.cloud') || url.includes('cdn.getfy'));
+
+const logoUrl = computed(() => {
+    const logo = branding.value.app_logo || branding.value.app_logo_dark;
+    if (!logo || isGetfyCdn(logo)) return '/images/auth/platafy_logo.png';
+    return logo;
+});
+
+const iconUrl = computed(() => {
+    const icon = branding.value.app_logo_icon || branding.value.app_logo_icon_dark;
+    if (!icon || isGetfyCdn(icon)) return '/images/auth/platafy_icon.png';
+    return icon;
+});
+
+function handleIconError(e) {
+    e.target.src = '/images/auth/platafy_icon.png';
+}
+
+function handleLogoError(e) {
+    e.target.src = '/images/auth/platafy_logo.png';
+}
 
 const redirectAfterLogin = computed(() => page.props.redirect ?? null);
 
@@ -105,7 +129,7 @@ onUnmounted(() => {
                         class="notification-card glass-effect rounded-2xl p-4 flex items-center gap-3.5 w-76 shadow-2xl transition-all"
                     >
                         <div class="w-10 h-10 rounded-full border border-amber-500/40 bg-black/60 flex items-center justify-center overflow-hidden p-1.5 shrink-0 shadow-inner">
-                            <img :src="iconUrl" :alt="appName" class="w-full h-full object-contain" />
+                            <img :src="iconUrl" :alt="appName" class="w-full h-full object-contain" @error="handleIconError" />
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-start mb-0.5">
@@ -149,6 +173,7 @@ onUnmounted(() => {
                             :src="logoUrl"
                             :alt="appName"
                             class="h-14 sm:h-16 w-auto object-contain drop-shadow-md"
+                            @error="handleLogoError"
                         />
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">

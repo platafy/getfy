@@ -6,10 +6,22 @@ import Button from '@/components/ui/Button.vue';
 const page = usePage();
 const status = computed(() => page.props.flash?.status ?? null);
 const branding = computed(() => page.props.public_branding ?? {});
-const primary = computed(() => branding.value.theme_primary || '#c8fa64');
-const appName = computed(() => branding.value.app_name || 'Getfy');
-const logoLight = computed(() => branding.value.app_logo_icon || 'https://cdn.getfy.cloud/collapsed-logo.png');
-const logoDark = computed(() => branding.value.app_logo_icon_dark || logoLight.value);
+const primary = computed(() => branding.value.theme_primary || '#f59e0b');
+const appName = computed(() => {
+    const name = branding.value.app_name;
+    if (!name || name.trim().toLowerCase() === 'getfy' || name.trim().toLowerCase() === 'platafy') return 'PLATAFY';
+    return name;
+});
+const logoLight = computed(() => {
+    const icon = branding.value.app_logo_icon;
+    if (!icon || (typeof icon === 'string' && icon.includes('getfy.cloud'))) return '/images/auth/platafy_icon.png';
+    return icon;
+});
+const logoDark = computed(() => {
+    const icon = branding.value.app_logo_icon_dark;
+    if (!icon || (typeof icon === 'string' && icon.includes('getfy.cloud'))) return logoLight.value;
+    return icon;
+});
 
 const form = useForm({
     email: '',

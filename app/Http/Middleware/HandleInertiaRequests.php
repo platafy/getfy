@@ -289,14 +289,39 @@ class HandleInertiaRequests extends Middleware
         $loginHero = config('getfy.login_hero_image');
         $loginHero = ($loginHero !== null && $loginHero !== '') ? (string) $loginHero : 'https://cdn.getfy.cloud/login-v2.webp';
 
+        $appName = (string) config('getfy.app_name', 'PLATAFY');
+        if ($appName === '' || strtolower($appName) === 'getfy') {
+            $appName = 'PLATAFY';
+        }
+
+        $appLogo = (string) config('getfy.app_logo');
+        if ($appLogo === '' || str_contains($appLogo, 'getfy.cloud')) {
+            $appLogo = '/images/auth/platafy_logo.png';
+        }
+
+        $appLogoDark = (string) config('getfy.app_logo_dark');
+        if ($appLogoDark === '' || str_contains($appLogoDark, 'getfy.cloud')) {
+            $appLogoDark = '/images/auth/platafy_logo.png';
+        }
+
+        $appLogoIcon = (string) config('getfy.app_logo_icon');
+        if ($appLogoIcon === '' || str_contains($appLogoIcon, 'getfy.cloud')) {
+            $appLogoIcon = '/images/auth/platafy_icon.png';
+        }
+
+        $appLogoIconDark = (string) config('getfy.app_logo_icon_dark');
+        if ($appLogoIconDark === '' || str_contains($appLogoIconDark, 'getfy.cloud')) {
+            $appLogoIconDark = '/images/auth/platafy_icon.png';
+        }
+
         return [
-            'app_name' => (string) config('getfy.app_name', 'Getfy'),
+            'app_name' => $appName,
             'theme_primary' => $themePrimary,
             'pwa_theme_color' => $pwaTheme,
-            'app_logo' => (string) config('getfy.app_logo'),
-            'app_logo_dark' => (string) config('getfy.app_logo_dark'),
-            'app_logo_icon' => (string) config('getfy.app_logo_icon'),
-            'app_logo_icon_dark' => (string) config('getfy.app_logo_icon_dark'),
+            'app_logo' => $appLogo,
+            'app_logo_dark' => $appLogoDark,
+            'app_logo_icon' => $appLogoIcon,
+            'app_logo_icon_dark' => $appLogoIconDark,
             'login_hero_image' => $loginHero,
             'favicon_url' => $favicon,
             'pwa_icon_192' => config('getfy.pwa_icon_192'),

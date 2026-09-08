@@ -78,12 +78,12 @@ return [
      */
     'plugin_store_api_url' => rtrim((string) env('PLUGIN_STORE_API_URL', 'https://getfy.org'), '/'),
 
-    'app_name' => 'Getfy',
-    'theme_primary' => '#74d909',
-    'app_logo' => 'https://cdn.getfy.cloud/logo-white-v3.png',
-    'app_logo_dark' => 'https://cdn.getfy.cloud/logo-dark-v3.png',
-    'app_logo_icon' => 'https://cdn.getfy.cloud/collapsed-logo-v3.png',
-    'app_logo_icon_dark' => 'https://cdn.getfy.cloud/collapsed-logo-v2.png',
+    'app_name' => env('APP_NAME', 'PLATAFY'),
+    'theme_primary' => env('THEME_PRIMARY', '#f59e0b'),
+    'app_logo' => env('APP_LOGO', '/images/auth/platafy_logo.png'),
+    'app_logo_dark' => env('APP_LOGO_DARK', '/images/auth/platafy_logo.png'),
+    'app_logo_icon' => env('APP_LOGO_ICON', '/images/auth/platafy_icon.png'),
+    'app_logo_icon_dark' => env('APP_LOGO_ICON_DARK', '/images/auth/platafy_icon.png'),
 
     /** White Label plugin (null = default / não aplicado) */
     'login_hero_image' => null,
